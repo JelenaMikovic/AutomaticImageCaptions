@@ -16,8 +16,8 @@ image_features_file = 'image_features_pca.npy'
 
 data = pd.read_csv(captions_file)
 image_features = np.load(image_features_file)
-
 captions = data['Opis'].values
+
 tokenizer = Tokenizer()
 tokenizer.fit_on_texts(captions)
 vocab_size = len(tokenizer.word_index) + 1
@@ -74,9 +74,9 @@ def define_model(vocab_size, max_length):
     return model
 
 optimizers = {
-    'adam': Adam(learning_rate=0.001),
-    'sgd': SGD(learning_rate=0.001),
-    'momentum': SGD(learning_rate=0.001, momentum=0.9),
+    'adam': Adam(learning_rate=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, amsgrad=False),
+    'sgd': SGD(learning_rate=0.001, nesterov=False),
+    'momentum': SGD(learning_rate=0.001, momentum=0.9, nesterov=False),
     'rmsprop': RMSprop(learning_rate=0.001)
 }
 
@@ -86,12 +86,12 @@ def evaluate_model(model, X1, X2, y_true, tokenizer, max_length):
     for i in range(len(X1)):
         yhat = generate_caption(model, tokenizer, X1[i], max_length)
         actual.append([y_true[i].split()])
-        print(y_true[i].split())
-        print(" ---------------------- ")
-        print(yhat.split())
+        #print(y_true[i].split())
+        #print(" ---------------------- ")
+        #print(yhat.split())
         predicted.append(yhat.split())
-        if len(predicted) == 100:
-            break
+        #if len(predicted) == 100:
+        #    break
     bleu = corpus_bleu(actual, predicted)
     return bleu
 
